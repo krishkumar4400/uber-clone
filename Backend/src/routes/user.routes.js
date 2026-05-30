@@ -4,6 +4,10 @@ const userController = require("../controllers/user.controllers.js");
 
 const userRouter = express.Router();
 
+/**
+ * Route: POST /api/user/register
+ * Description: Register a new user with fullname, email, and password.
+ */
 userRouter.post(
   "/register",
   [
@@ -18,11 +22,19 @@ userRouter.post(
   userController.registerUser,
 );
 
-userRouter.post("/login", [
-  body("email").isEmail().withMessage("Invalid Email"),
-  body("password")
-    .isLength({ min: 6 })
-    .withMessage("Password must be atleast 6 character long"),
-], userController.loginuser);
+/**
+ * Route: POST /api/user/login
+ * Description: Authenticate a user and return a JWT token.
+ */
+userRouter.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Invalid Email"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be atleast 6 character long"),
+  ],
+  userController.loginuser,
+);
 
 module.exports = userRouter;

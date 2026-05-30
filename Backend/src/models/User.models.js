@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+/**
+ * User schema for authentication and app user data.
+ */
 const userSchema = new mongoose.Schema({
   fullname: {
     firstname: {
@@ -33,14 +36,28 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * Generate a signed JWT auth token for the current user.
+ * @returns {string}
+ */
 userSchema.methods.generateAuthToken = async function () {
   return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
 };
 
+/**
+ * Compare a plain text password with the stored hashed password.
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+/**
+ * Hash a plain text password before saving it.
+ * @param {string} password
+ * @returns {Promise<string>}
+ */
 userSchema.statics.hashPassword = async function (password) {
   return await bcrypt.hash(password, 10);
 };

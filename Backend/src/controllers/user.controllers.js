@@ -2,6 +2,13 @@ const userModel = require("../models/User.models.js");
 const userService = require("../services/user.services.js");
 const { validationResult } = require("express-validator");
 
+/**
+ * Register a new user account.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @returns {Promise<import("express").Response>}
+ */
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -39,6 +46,13 @@ module.exports.registerUser = async (req, res, next) => {
   });
 };
 
+/**
+ * Authenticate a user and return a JWT token.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @returns {Promise<import("express").Response>}
+ */
 module.exports.loginuser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
