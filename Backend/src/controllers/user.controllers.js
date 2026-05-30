@@ -1,6 +1,7 @@
 const userModel = require("../models/User.models.js");
 const userService = require("../services/user.services.js");
 const { validationResult } = require("express-validator");
+const blackListTokenModel = require("../models/blackListToken.models.js");
 
 /**
  * Register a new user account.
@@ -40,6 +41,12 @@ module.exports.registerUser = async (req, res, next) => {
 
   const token = await user.generateAuthToken();
 
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
   return res.status(201).json({
     token,
     user,
@@ -64,7 +71,7 @@ module.exports.loginuser = async (req, res, next) => {
 
   const { email, password } = req.body;
 
-  const user = await userModel.findOne({ email });
+  const user = await userModel.findOne({ email }).select("+password");
   if (!user) {
     return res.status(401).json({
       message: "Incorrect email or password",
@@ -73,7 +80,6 @@ module.exports.loginuser = async (req, res, next) => {
   }
 
   const isPasswordMatch = await user.comparePassword(password);
-  console.log(isPasswordMatch);
 
   if (!isPasswordMatch) {
     return res.status(401).json({
@@ -84,8 +90,34 @@ module.exports.loginuser = async (req, res, next) => {
 
   const token = await user.generateAuthToken();
 
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
   return res.status(200).json({
     user,
     token,
+  });
+};
+
+module.exports.getUserProfile = async (req, res) => {
+  const user = req.user;
+  console.log(user);
+  return res.status(200).json({
+    user,
+  });
+};
+
+module.exports.logoutUser = async (req, res) => {
+  res.clearCookie("token");
+
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  await blackListTokenModel.create({token});
+
+  return res.status(200).json({
+    message: "You are logged out",
+    success: true,
   });
 };

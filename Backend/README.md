@@ -86,6 +86,75 @@ Example:
 - `401 Unauthorized`
   - Not used for registration, but may be returned by other auth endpoints
 
+## `GET /api/user/profile`
+
+Returns the authenticated user's profile. This endpoint requires a valid JWT in the `Authorization` header.
+
+### Request
+
+- Method: `GET`
+- URL: `/api/user/profile`
+- Headers:
+  - `Authorization: Bearer <jwt-token>`
+
+### Success Response
+
+- Status: `200 OK`
+
+#### Example response
+
+```json
+{
+  "user": {
+    "_id": "<user-id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "socketId": null,
+    "__v": 0
+  }
+}
+```
+
+### Error Responses
+
+- `401 Unauthorized` - Missing or invalid `Authorization` header / token
+- `404 Not Found` - User not found
+
+## `POST /api/user/logout`
+
+Logs out the authenticated user. Implementation may vary (token revocation, session deletion), but the client must send the user's JWT.
+
+### Request
+
+- Method: `POST`
+- URL: `/api/user/logout`
+- Headers:
+  - `Authorization: Bearer <jwt-token>`
+
+### Request Body
+
+- None
+
+### Success Response
+
+- Status: `200 OK`
+
+#### Example response
+
+```json
+{
+  "message": "Logged out successfully",
+  "success": true
+}
+```
+
+### Error Responses
+
+- `401 Unauthorized` - Missing or invalid `Authorization` header / token
+
 ### Notes
 
 - Ensure `JWT_SECRET` is set in the backend environment variables.

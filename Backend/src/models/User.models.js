@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false
   },
   socketId: {
     type: String,
@@ -41,7 +42,9 @@ const userSchema = new mongoose.Schema({
  * @returns {string}
  */
 userSchema.methods.generateAuthToken = async function () {
-  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: '24h'
+  });
 };
 
 /**
